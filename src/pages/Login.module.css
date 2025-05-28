@@ -1,0 +1,93 @@
+/* src/pages/Login.module.css */
+
+.loginContainer {
+  max-width: 400px;
+  margin: 6rem auto;
+  padding: 2.5rem 2rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.loginContainer h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--btn-primary);
+  user-select: none;
+}
+
+.loginContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.loginContainer label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  user-select: none;
+}
+
+.loginContainer input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.loginContainer input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.loginContainer input:focus {
+  border-color: var(--btn-primary);
+  box-shadow: 0 0 8px var(--btn-primary);
+  outline: none;
+}
+
+.loginContainer button {
+  background-color: var(--btn-primary);
+  color: white;
+  font-weight: 700;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+.loginContainer button:hover,
+.loginContainer button:focus {
+  background-color: #005792;
+  outline: none;
+  box-shadow: 0 0 10px #005792aa;
+}
+
+.errorMsg {
+  color: #e63946;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  user-select: none;
+}
+
+/* Responsividade simples */
+@media (max-width: 450px) {
+  .loginContainer {
+    margin: 3rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+}
