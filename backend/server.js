@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middlewares
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(cors());
 
 // Conexão com o banco de dados PostgreSQL
 const pool = new Pool({
