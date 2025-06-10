@@ -165,3 +165,26 @@
   background-color: #1e1e1e;
   color: #aaa;
 }
+
+
+/* LOGOUT BUTTON */
+.logoutBtn {
+  background: #e63946; /* Cor vermelha para indicar saída/perigo */
+  border: none;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-left: 1rem; /* Adicionado para espaçar do botão de tema */
+}
+
+.logoutBtn:hover {
+  background: #c5303f;
+}
+
+/* ... (o restante do seu CSS) ... */
