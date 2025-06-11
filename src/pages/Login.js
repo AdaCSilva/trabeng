@@ -1,88 +1,88 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Login.module.css';
-import Header from '../components/Header';
+import styles from './Login.module.css'; //
 
-function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+// O componente Login agora recebe `onLogin` para notificar App.js sobre o sucesso e o perfil
+export default function Login({ onLogin }) {
+  const [username, setUsername] = useState(''); //
+  const [password, setPassword] = useState(''); //
+  const [error, setError] = useState(''); //
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+  const handleSubmit = async (e) => { // Tornar a função assíncrona
+    e.preventDefault();
+    setError(''); //
 
-        // AQUI declaramos a variável antes de usar
-        const apiUrl = process.env.REACT_APP_API_URL;
+    const apiUrl = process.env.REACT_APP_API_URL;
 
-        try {
-            // Aqui usamos a variável com a URL correta do backend
-            const response = await fetch(`${apiUrl}/api/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ login: email, senha: password }),
-            });
+    if (username.trim().length < 3) { //
+      setError('Usuário deve ter no mínimo 3 caracteres.'); //
+      return;
+    }
+    if (password.length < 6) { //
+      setError('Senha deve ter no mínimo 6 caracteres.'); //
+      return;
+    }
 
-            const data = await response.json();
+    try {
+      const response = await fetch(`${apiUrl}/api/login`, { // Chamada para o backend
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ login: username, senha: password }),
+      });
 
-            if (!response.ok) {
-                // Se a resposta não for OK (ex: 401, 500), joga um erro com a mensagem do backend
-                throw new Error(data.message || 'Erro ao fazer login');
-            }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro no login. Tente novamente.');
+      }
 
-            // Se o login for bem-sucedido
-            console.log('Login bem-sucedido:', data);
-            // Aqui você pode salvar o token/usuário no localStorage e redirecionar
-            // localStorage.setItem('user', JSON.stringify(data.user));
-            navigate('/home'); // Redireciona para a página Home
+      const data = await response.json();
+      // Chamar onLogin com o perfil do usuário retornado pelo backend
+      onLogin(data.user.perfil); // O App.js agora sabe o perfil do usuário
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
-        } catch (err) {
-            setError(err.message);
-            console.error('Falha no login:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+  return (
+    <main className={styles.loginContainer} aria-label="Área de login"> {/* */}
+      <h2>Entrar no Sistema</h2> {/* */}
+      <form onSubmit={handleSubmit} noValidate> {/* */}
+        <label htmlFor="username">Usuário</label> {/* */}
+        <input
+          id="username"
+          name="username" // Adicionado name para consistência
+          type="text"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          placeholder="Digite seu usuário"
+          autoComplete="username"
+          required
+          minLength={3}
+          spellCheck={false}
+          className={styles.input} // Adicionado estilo
+        />
 
-    return (
-        <div className={styles.container}>
-            <Header />
-            <div className={styles.loginBox}>
-                <h2>Login</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="email">Usuário</label>
-                        <input
-                            type="text"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="password">Senha</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    {error && <p className={styles.error}>{error}</p>}
-                    <button type="submit" className={styles.loginButton} disabled={loading}>
-                        {loading ? 'Entrando...' : 'Entrar'}
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
+        <label htmlFor="password">Senha</label> {/* */}
+        <input
+          id="password"
+          name="password" // Adicionado name para consistência
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Digite sua senha"
+          autoComplete="current-password"
+          required
+          minLength={6}
+          className={styles.input} // Adicionado estilo
+        />
+
+        {error && <p className={styles.errorMsg} role="alert">{error}</p>} {/* */}
+
+        <button type="submit" aria-label="Entrar no sistema"> {/* */}
+          Entrar
+        </button>
+      </form>
+    </main>
+  );
 }
-
-export default Login;
