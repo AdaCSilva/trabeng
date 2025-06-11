@@ -25,6 +25,7 @@ export default function Atendimento() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [conselheiros, setConselheiros] = useState([]); // Estado para armazenar a lista de conselheiros
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   // Hook para buscar a lista de conselheiros ao carregar a página
   useEffect(() => {
