@@ -31,7 +31,7 @@ export default function Atendimento() {
   useEffect(() => {
     const fetchConselheiros = async () => {
       try {
-        const response = await fetch('${apiUrl}/api/usuarios/conselheiros');
+        const response = await fetch(`${apiUrl}/api/usuarios/conselheiros`);
         if (!response.ok) {
           throw new Error('Erro ao carregar lista de conselheiros.');
         }
