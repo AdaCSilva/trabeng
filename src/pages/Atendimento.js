@@ -87,7 +87,7 @@ export default function Atendimento() {
 
     try {
       // Faz a requisição POST para a API do backend
-      const response = await fetch('http://localhost:3001/api/atendimentos', {
+      const response = await fetch('${apiUrl}/api/atendimentos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

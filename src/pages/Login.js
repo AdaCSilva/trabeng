@@ -21,7 +21,7 @@ export default function Login({ onLogin }) {
     }
 
     try {
-      const response = await fetch('https://conselhotutelarmoc.onrender.com/api/login',{ // Chamada para o backend
+      const response = await fetch(`${apiUrl}/api/login`, { // Chamada para o backend
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
