@@ -6,10 +6,12 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const apiUrl = process.env.REACT_APP_API_URL;
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
+
 
 // Conexão com o banco de dados PostgreSQL
 const pool = new Pool({
@@ -217,7 +219,33 @@ app.get('/api/usuarios/conselheiros', async (req, res) => {
     }
 });
 
+app.get('/api/stats', async (req, res) => {
+    try {
+        // Usamos Promise.all para executar todas as contagens em paralelo
+        const [casosPendentesResult, casosAtendidosResult, usuariosAtivosResult] = await Promise.all([
+            // Conta casos com status 'Em Andamento' como pendentes
+            pool.query("SELECT COUNT(*) FROM Caso WHERE status = 'Em Andamento'"),
+            // Conta casos com qualquer outro status como atendidos/concluídos
+            pool.query("SELECT COUNT(*) FROM Caso WHERE status <> 'Em Andamento'"),
+            // Conta todos os usuários cadastrados
+            pool.query('SELECT COUNT(*) FROM Usuario')
+        ]);
+
+        const stats = {
+            casosPendentes: parseInt(casosPendentesResult.rows[0].count, 10),
+            casosAtendidos: parseInt(casosAtendidosResult.rows[0].count, 10),
+            usuariosAtivos: parseInt(usuariosAtivosResult.rows[0].count, 10)
+        };
+
+        res.status(200).json(stats);
+
+    } catch (error) {
+        console.error('Erro ao buscar estatísticas:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao buscar estatísticas.' });
+    }
+});
+
 // Inicia o servidor
 app.listen(PORT, () => {
-    console.log(`Servidor backend rodando em http://localhost:${PORT}`);
+    console.log(`Servidor backend rodando em ${apiUrl}:${PORT}`);
 });

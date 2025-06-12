@@ -5,8 +5,9 @@ import Home from './pages/Home';
 import Atendimento from './pages/Atendimento';
 import Upload from './pages/Upload';
 import Login from './pages/Login';
+import ConsultarAtendimento from './pages/ConsultarAtendimento';
+import DetalheAtendimento from './pages/DetalheAtendimento';
 // Importe novos componentes para Consultar e Finalizar Atendimento, se já os tiver
-// import ConsultarAtendimento from './pages/ConsultarAtendimento';
 // import FinalizarAtendimento from './pages/FinalizarAtendimento';
 // import GerenciarUsuarios from './pages/GerenciarUsuarios';
 
@@ -123,12 +124,13 @@ function App() {
 
               <main className={styles.main}> {/* */}
                 <Routes>
-                  <Route path="/home" element={<Home />} /> {/* */}
+                  <Route path="/home" element={<Home />} /> 
                   <Route path="/atendimento" element={<Atendimento userProfile={userProfile} />} />
                   <Route path="/upload" element={<Upload />} /> {/* */}
+                  <Route path="/consultar-atendimento" element={<ConsultarAtendimento />} />
+                  <Route path="/atendimentos/:id" element={<DetalheAtendimento />} /> 
 
                   {/* Rotas para os novos componentes (você precisará criá-los) */}
-                  {/* <Route path="/consultar-atendimento" element={<ConsultarAtendimento />} /> */}
                   {/* <Route path="/finalizar-atendimento" element={<FinalizarAtendimento />} /> */}
                   {/* <Route path="/gerenciar-usuarios" element={<GerenciarUsuarios />} /> */}
                   {/* <Route path="/compartilhar-informacoes" element={<CompartilharInformacoes />} /> */}

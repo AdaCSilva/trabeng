@@ -1,0 +1,62 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f4f7fa;
+}
+
+.mainContent {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.mainContent h2 {
+    color: #333;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.tableContainer {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.atendimentosTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.atendimentosTable th,
+.atendimentosTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.atendimentosTable thead th {
+    background-color: #eef2f7;
+    color: #555;
+    font-weight: 600;
+}
+
+.atendimentosTable tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.atendimentosTable tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.atendimentosTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.error {
+    color: #d9534f;
+    font-weight: bold;
+}
