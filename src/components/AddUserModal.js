@@ -63,6 +63,9 @@ function AddUserModal({ onClose, onUserAdded }) {
                         <select id="perfil" value={perfil} onChange={e => setPerfil(e.target.value)}>
                             <option value="Conselheiro">Conselheiro</option>
                             <option value="Administrador">Administrador</option>
+                            <option value="Secretario">Secretário</option>
+                            <option value="Assistente Social">Assistente Social</option>
+                            <option value="Psicólogo">Psicólogo</option>
                         </select>
                     </div>
                     {error && <p className={styles.error}>{error}</p>}

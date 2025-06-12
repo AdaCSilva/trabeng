@@ -106,10 +106,29 @@ CREATE TABLE Compartilhamento (
 
 -- 14. Inserção de usuários de teste (opcional)
 INSERT INTO Usuario (nome, login, senha, perfil) VALUES
-('Admin Teste', 'admin', 'admin123', 'Administrador'),
-('Conselheiro Teste', 'conselheiro', 'conselho123', 'Conselheiro'),
-('Secretario Teste', 'secretario', 'secretario123', 'Secretario'),
-('Ana Conselheira', 'ana.c', 'senha123', 'Conselheiro'),
-('Bruno Assistente', 'bruno.a', 'senha123', 'Assistente Social'),
-('Carla Psicologa', 'carla.p', 'senha123', 'Psicólogo'),
-('Daniel Secretario', 'daniel.s', 'senha123', 'Secretario');
+('Admin Teste', 'admin', '$2b$10$dDqmE4lsm7kbpPg2LzLgCe0QQ5GuVdDEKBAyTLA0BbICpK5228gU2', 'Administrador'),
+('Conselheiro Teste', 'conselheiro', '$2b$10$z5kWLB3AdMfar6nuPAssge90Z3kEswG6tzDnuZ1.qf7pkY1YTcdnK', 'Conselheiro'),
+('Secretario Teste', 'secretario', '$2b$10$erPEzgaPVSiQaa5POiamge9iQ8pFw6G1uTgQVcGEOrM8HKQ0y1hwq', 'Secretario'),
+('Ana Conselheira', 'ana', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Conselheiro'),
+('Bruno Assistente', 'bruno', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Assistente Social'),
+('Carla Psicologa', 'carla', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Psicólogo');
+
+-- Atualiza a senha do usuário 'admin'
+UPDATE Usuario SET senha = '$2b$10$P.8Fj7j1Wr1jYmolRIU.DegCDv96bzxVrtA.q/P0HwrPXhem63bT.' WHERE login = 'admin';
+
+-- Atualiza a senha do usuário 'conselheiro'
+UPDATE Usuario SET senha = '$2b$10$z5kWLB3AdMfar6nuPAssge90Z3kEswG6tzDnuZ1.qf7pkY1YTcdnK' WHERE login = 'conselheiro';
+
+-- Atualiza a senha do usuário 'secretario'
+UPDATE Usuario SET senha = '$2b$10$erPEzgaPVSiQaa5POiamge9iQ8pFw6G1uTgQVcGEOrM8HKQ0y1hwq' WHERE login = 'secretario';
+
+-- Atualiza a senha do usuário 'ana'
+UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'ana';
+
+-- Atualiza a senha do usuário 'bruno'
+UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'bruno';
+
+-- Atualiza a senha do usuário 'carla'
+UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'carla';
+
+SELECT login, senha FROM Usuario WHERE login = 'admin';
