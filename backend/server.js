@@ -1,17 +1,16 @@
 require('dotenv').config();
 
 const express = require('express');
-const { Pool } = require('pg'); // Importa o Pool do pg
+const { Pool } = require('pg');
 const cors = require('cors');
+const bcrypt = require('bcrypt'); // <-- IMPORTADO O BCRYPT
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const apiUrl = process.env.REACT_APP_API_URL;
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
-
 
 // Conexão com o banco de dados PostgreSQL
 const pool = new Pool({
@@ -26,12 +25,11 @@ const pool = new Pool({
 (async () => {
     try {
         const client = await pool.connect();
-        // Correção: Usando client.processID que é o correto para o 'pg'
         console.log('Conectado ao banco de dados PostgreSQL com o Process ID:', client.processID);
-        client.release(); // Libera o cliente
+        client.release();
     } catch (err) {
         console.error('Erro ao conectar ao banco de dados:', err.stack);
-        process.exit(1); // Encerra o processo se não conseguir conectar ao BD
+        process.exit(1);
     }
 })();
 
@@ -42,7 +40,7 @@ app.get('/', (req, res) => {
     res.send('Backend do Conselho Tutelar funcionando! Acesse as rotas da API.');
 });
 
-// Rota para Lidar com Login
+// Rota para Lidar com Login (ATUALIZADA COM BCRYPT)
 app.post('/api/login', async (req, res) => {
     const { login, senha } = req.body;
 
@@ -51,20 +49,22 @@ app.post('/api/login', async (req, res) => {
     }
 
     try {
-        // CUIDADO: Em uma aplicação real, você SEMPRE usaria hashing (ex: bcrypt) para senhas.
         const { rows } = await pool.query('SELECT id_usuario, nome, perfil, senha FROM Usuario WHERE login = $1', [login]);
 
-        if (rows.length > 0) {
-            const user = rows[0];
-            // Comparação de senha em texto simples (NÃO USE EM PRODUÇÃO)
-            if (user.senha === senha) {
-                res.status(200).json({
-                    message: 'Login bem-sucedido!',
-                    user: { id: user.id_usuario, nome: user.nome, perfil: user.perfil }
-                });
-            } else {
-                res.status(401).json({ message: 'Credenciais inválidas.' });
-            }
+        if (rows.length === 0) {
+            return res.status(401).json({ message: 'Credenciais inválidas.' });
+        }
+
+        const user = rows[0];
+
+        // Compara a senha enviada com o hash salvo no banco
+        const isMatch = await bcrypt.compare(senha, user.senha);
+
+        if (isMatch) {
+            res.status(200).json({
+                message: 'Login bem-sucedido!',
+                user: { id: user.id_usuario, nome: user.nome, perfil: user.perfil }
+            });
         } else {
             res.status(401).json({ message: 'Credenciais inválidas.' });
         }
@@ -74,7 +74,33 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// Rota para Registrar Atendimento (POST /api/atendimentos)
+// Rota para Registrar Usuário (ADICIONADA E COM BCRYPT)
+app.post('/api/register', async (req, res) => {
+    const { nome, login, senha, perfil } = req.body;
+
+    if (!nome || !login || !senha || !perfil) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+    }
+
+    try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(senha, saltRounds);
+
+        const query = 'INSERT INTO Usuario (nome, login, senha, perfil) VALUES ($1, $2, $3, $4) RETURNING id_usuario';
+        const { rows } = await pool.query(query, [nome, login, hashedPassword, perfil]);
+
+        res.status(201).json({ success: true, message: 'Usuário registrado com sucesso!', userId: rows[0].id_usuario });
+    } catch (error) {
+        if (error.code === '23505') { // Erro de login duplicado
+            return res.status(409).json({ message: 'Este login (email) já está em uso.' });
+        }
+        console.error('Erro ao registrar usuário:', error);
+        res.status(500).json({ message: 'Erro ao registrar usuário.' });
+    }
+});
+
+
+// Rota para Registrar Atendimento (sem alterações)
 app.post('/api/atendimentos', async (req, res) => {
     const {
         nomeCrianca, dataNascimento, sexo, escolaridade,
@@ -117,7 +143,6 @@ app.post('/api/atendimentos', async (req, res) => {
         const idCaso = resultCaso.rows[0].id_caso;
 
         const anoAtual = new Date().getFullYear().toString().slice(-2);
-        // Correção: Removido HTML do número do procedimento
         const numeroProcedimentoFormatado = `${String(idCaso).padStart(4, '0')}/${anoAtual}`;
 
         await client.query(
@@ -150,7 +175,8 @@ app.post('/api/atendimentos', async (req, res) => {
     }
 });
 
-// --- ROTA: GET /api/atendimentos para listar todos os atendimentos ---
+
+// ROTA: GET /api/atendimentos para listar todos os atendimentos
 app.get('/api/atendimentos', async (req, res) => {
     try {
         const { rows } = await pool.query(
@@ -192,7 +218,7 @@ app.get('/api/atendimentos/:id', async (req, res) => {
             GROUP BY 
                 ca.id_caso, 
                 c.id_crianca, 
-                u.id_usuario`, // Correção: Agrupando pelas chaves primárias é suficiente para o PostgreSQL identificar a dependência funcional.
+                u.id_usuario`,
             [id]
         );
 
@@ -219,33 +245,39 @@ app.get('/api/usuarios/conselheiros', async (req, res) => {
     }
 });
 
+// Rota para buscar estatísticas do dashboard
 app.get('/api/stats', async (req, res) => {
     try {
-        // Usamos Promise.all para executar todas as contagens em paralelo
         const [casosPendentesResult, casosAtendidosResult, usuariosAtivosResult] = await Promise.all([
-            // Conta casos com status 'Em Andamento' como pendentes
             pool.query("SELECT COUNT(*) FROM Caso WHERE status = 'Em Andamento'"),
-            // Conta casos com qualquer outro status como atendidos/concluídos
             pool.query("SELECT COUNT(*) FROM Caso WHERE status <> 'Em Andamento'"),
-            // Conta todos os usuários cadastrados
             pool.query('SELECT COUNT(*) FROM Usuario')
         ]);
-
         const stats = {
             casosPendentes: parseInt(casosPendentesResult.rows[0].count, 10),
             casosAtendidos: parseInt(casosAtendidosResult.rows[0].count, 10),
             usuariosAtivos: parseInt(usuariosAtivosResult.rows[0].count, 10)
         };
-
         res.status(200).json(stats);
-
     } catch (error) {
         console.error('Erro ao buscar estatísticas:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao buscar estatísticas.' });
     }
 });
 
+// Rota para buscar todos os usuários
+app.get('/api/usuarios', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT id_usuario, nome, login, perfil FROM Usuario ORDER BY nome ASC');
+        res.status(200).json(rows);
+    } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao buscar usuários.' });
+    }
+});
+
+
 // Inicia o servidor
 app.listen(PORT, () => {
-    console.log(`Servidor backend rodando em ${apiUrl}:${PORT}`);
+    console.log(`Servidor backend rodando na porta ${PORT}`);
 });

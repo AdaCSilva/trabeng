@@ -7,9 +7,9 @@ import Upload from './pages/Upload';
 import Login from './pages/Login';
 import ConsultarAtendimento from './pages/ConsultarAtendimento';
 import DetalheAtendimento from './pages/DetalheAtendimento';
+import GerenciarUsuarios from './pages/GerenciarUsuarios';
 // Importe novos componentes para Consultar e Finalizar Atendimento, se já os tiver
 // import FinalizarAtendimento from './pages/FinalizarAtendimento';
-// import GerenciarUsuarios from './pages/GerenciarUsuarios';
 
 import { ThemeContext, themes } from './contexts/ThemeContext';
 import Header from './components/Header';
@@ -129,10 +129,10 @@ function App() {
                   <Route path="/upload" element={<Upload />} /> {/* */}
                   <Route path="/consultar-atendimento" element={<ConsultarAtendimento />} />
                   <Route path="/atendimentos/:id" element={<DetalheAtendimento />} /> 
+                  <Route path="/gerenciar-usuarios" element={<GerenciarUsuarios />} /> 
 
                   {/* Rotas para os novos componentes (você precisará criá-los) */}
                   {/* <Route path="/finalizar-atendimento" element={<FinalizarAtendimento />} /> */}
-                  {/* <Route path="/gerenciar-usuarios" element={<GerenciarUsuarios />} /> */}
                   {/* <Route path="/compartilhar-informacoes" element={<CompartilharInformacoes />} /> */}
 
                   <Route path="*" element={<Navigate to="/home" replace />} /> {/* */}
