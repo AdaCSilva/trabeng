@@ -187,7 +187,7 @@ export default function Atendimento() {
             <option value="">Selecione</option>
             <option value="M">Masculino</option>
             <option value="F">Feminino</option>
-            <option value="Outro">Outro</option>
+            <option value="X">Não informado</option>
           </select>
         </div>
 

@@ -26,7 +26,7 @@ CREATE TABLE Crianca (
     id_crianca INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE,
-    sexo ENUM('M', 'F', 'Outro'),
+    sexo ENUM('M', 'F', 'X'),
     escolaridade VARCHAR(50), -- Pode ser o nome da escola ou nível de escolaridade
     id_endereco INT, -- Opcional, se a criança tiver um endereço próprio diferente dos responsáveis
     FOREIGN KEY (id_endereco) REFERENCES Endereco(id_endereco)
@@ -50,7 +50,7 @@ CREATE TABLE Caso (
     medidas_adotadas TEXT,
     id_crianca INT NOT NULL,
     data_hora_registro DATETIME DEFAULT CURRENT_TIMESTAMP, -- Data e hora do registro do atendimento no sistema
-    codigo_atendimento VARCHAR(50), -- Código preenchido pela conselheira (Ex: CT-2025-001)
+    codigo_atendimento VARCHAR(50), -- Código preenchido pela conselheira (Ex: DV 12.32 CC01)
     id_conselheira_atendimento INT, -- FK para o usuário conselheiro que está atendendo
     numero_procedimento VARCHAR(15), -- Campo para armazenar o formato '0000/YY'
     FOREIGN KEY (id_crianca) REFERENCES Crianca(id_crianca),

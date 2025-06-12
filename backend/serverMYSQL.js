@@ -13,7 +13,8 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    // password: process.env.DB_PASSWORD,
+    password: "root",
     database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
@@ -197,6 +198,16 @@ app.get('/api/atendimentos/:id', async (req, res) => {
     }
 });
 
+router.get("/usuarios", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT id, nome, email FROM usuarios");
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Erro ao listar usuários:", error);
+    res.status(500).json({ mensagem: "Erro ao buscar usuários." });
+  }
+});
+
 app.get('/api/usuarios/conselheiros', async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT id_usuario, nome FROM Usuario WHERE perfil = 'Conselheiro'");
@@ -204,6 +215,54 @@ app.get('/api/usuarios/conselheiros', async (req, res) => {
     } catch (error) {
         console.error('Erro ao buscar conselheiros:', error);
         res.status(500).json({ message: 'Erro ao buscar conselheiros.' });
+    }
+});
+
+app.post('/api/register', async (req, res) => {
+    const { nome, login, senha, perfil } = req.body;
+
+    if (!nome || !login || !senha || !perfil) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+    }
+
+    try {
+        // Verifica se já existe um usuário com o mesmo login
+        const [rows] = await pool.query('SELECT * FROM Usuario WHERE login = ?', [login]);
+        if (rows.length > 0) {
+            return res.status(409).json({ message: 'Login já está em uso.' });
+        }
+
+        // Insere o novo usuário
+        const [result] = await pool.query(
+            'INSERT INTO Usuario (nome, login, senha, perfil) VALUES (?, ?, ?, ?)',
+            [nome, login, senha, perfil]
+        );
+
+        res.status(201).json({
+            message: 'Usuário criado com sucesso!',
+            id: result.insertId
+        });
+    } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao criar usuário.' });
+    }
+});
+
+// Rota para deletar um usuário por ID
+app.delete('/api/usuarios/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params;
+
+    try {
+        const [result] = await pool.query('DELETE FROM Usuario WHERE id_usuario = ?', [id_usuario]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        res.status(200).json({ message: 'Usuário excluído com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao excluir usuário:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao deletar usuário.' });
     }
 });
 

@@ -276,6 +276,24 @@ app.get('/api/usuarios', async (req, res) => {
     }
 });
 
+// Rota para deletar um usuário por ID
+app.delete('/api/usuarios/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Verifica se o usuário existe antes de deletar
+        const checkUser = await pool.query('SELECT * FROM Usuario WHERE id_usuario = $1', [id]);
+        if (checkUser.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+
+        await pool.query('DELETE FROM Usuario WHERE id_usuario = $1', [id]);
+        res.status(200).json({ message: 'Usuário deletado com sucesso!' });
+    } catch (error) {
+        console.error('Erro ao deletar usuário:', error);
+        res.status(500).json({ message: 'Erro interno do servidor ao deletar usuário.' });
+    }
+});
 
 // Inicia o servidor
 app.listen(PORT, () => {
