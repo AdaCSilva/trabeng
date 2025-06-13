@@ -100,3 +100,8 @@
     color: #d9534f;
     font-weight: bold;
 }
+
+:global(body.dark-mode) .usersTable th,
+:global(body.dark-mode) .usersTable td {
+    color: #f0f0f0;
+}
