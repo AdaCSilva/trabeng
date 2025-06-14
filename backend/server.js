@@ -93,9 +93,33 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     }
 });
 
+app.put('/api/usuarios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, login, perfil } = req.body;
+    if (!nome || !login || !perfil) {
+        return res.status(400).json({ message: 'Nome, login e perfil são obrigatórios.' });
+    }
+    try {
+        const query = 'UPDATE Usuario SET nome = $1, login = $2, perfil = $3 WHERE id_usuario = $4 RETURNING *';
+        const { rows } = await pool.query(query, [nome, login, perfil, id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        res.status(200).json({ message: 'Usuário atualizado com sucesso!', user: rows[0] });
+    } catch (error) {
+        if (error.code === '23505') {
+            return res.status(409).json({ message: 'Este login (email) já está em uso por outro usuário.' });
+        }
+        console.error('Erro ao atualizar usuário:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+});
+
 // --- ROTAS DE ATENDIMENTO E OUTRAS ---
 // (O restante das suas rotas de atendimento permanecem aqui)
 
 app.listen(PORT, () => {
     console.log(`Servidor backend rodando na porta ${PORT}`);
 });
+

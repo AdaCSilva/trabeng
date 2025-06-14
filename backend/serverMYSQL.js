@@ -94,6 +94,27 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     }
 });
 
+app.put('/api/usuarios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, login, perfil } = req.body;
+    if (!nome || !login || !perfil) {
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios.' });
+    }
+    try {
+        const [result] = await pool.query('UPDATE Usuario SET nome = ?, login = ?, perfil = ? WHERE id_usuario = ?', [nome, login, perfil, id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        res.status(200).json({ message: 'Usuário atualizado com sucesso!' });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ message: 'Este login (email) já está em uso por outro usuário.' });
+        }
+        console.error('Erro ao atualizar usuário:', error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+    }
+});
+
 // --- ROTAS DE ATENDIMENTO E OUTRAS ---
 // (O restante das suas rotas de atendimento permanecem aqui)
 
