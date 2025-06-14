@@ -30,36 +30,46 @@ function EditUserModal({ user, onClose, onUserUpdated }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
         setLoading(true);
+        setError('');
 
         const apiUrl = process.env.REACT_APP_API_URL;
+        const updateUrl = `${apiUrl}/api/usuarios/${user.id_usuario}`;
+
+        // LINHA DE DIAGNÓSTICO: Vamos ver a URL no console
+        console.log("URL de atualização sendo chamada:", updateUrl);
 
         try {
-            const response = await fetch(`${apiUrl}/api/usuarios/${user.id_usuario}`, {
-                method: 'PUT', // Usamos PUT para atualizar o recurso
+            const response = await fetch(updateUrl, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData), // Enviamos todos os dados do formulário
+                body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
-                const result = await response.json();
-                throw new Error(result.message || 'Erro ao atualizar o usuário.');
+                 // Se a resposta não for OK, vamos tentar ler como texto para ver o HTML
+                const errorText = await response.text();
+                console.error("Resposta não-OK do servidor:", errorText);
+                throw new Error('O servidor respondeu com um erro.');
             }
-
+            
+            // Tenta converter para JSON somente se a resposta for OK
+            const result = await response.json();
+            
             alert('Usuário atualizado com sucesso!');
-            onUserUpdated(); // Avisa o componente pai para atualizar a lista
-            onClose();       // Fecha o modal
+            onUserUpdated();
+            onClose();
         } catch (err) {
-            setError(err.message);
+            // Esse erro agora vai pegar tanto falhas de rede quanto o JSON inválido
+            console.error("Erro completo:", err);
+            setError("Falha ao salvar. Verifique o console para mais detalhes.");
         } finally {
             setLoading(false);
         }
     };
 
-    // Não renderiza nada se não houver um usuário para editar
     if (!user) {
         return null;
     }

@@ -1,28 +1,28 @@
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    background-color: #f4f7fa;
+    min-height: 100vh;
 }
 
 .mainContent {
     flex-grow: 1;
     padding: 2rem;
-    overflow-y: auto;
+    background-color: #f9fafb;
+    transition: background-color 0.3s ease;
 }
 
 .mainContent h2 {
-    color: #333;
+    margin: 0;
     margin-bottom: 2rem;
-    border-bottom: 2px solid #ddd;
-    padding-bottom: 0.5rem;
+    color: #111827;
 }
 
 .tableContainer {
-    background-color: #fff;
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
 }
 
 .atendimentosTable {
@@ -34,34 +34,76 @@
 .atendimentosTable td {
     padding: 12px 15px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e5e7eb; 
+    color: #374151;
 }
 
-.atendimentosTable thead th {
-    background-color: #eef2f7;
-    color: #555;
-    font-weight: 600;
-}
-
-.atendimentosTable tbody tr {
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-}
-
-.atendimentosTable tbody tr:hover {
-    background-color: #f9f9f9;
+.atendimentosTable th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    background-color: #f9fafb;
 }
 
 .atendimentosTable tbody tr:last-child td {
     border-bottom: none;
 }
 
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actionButton {
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    transition: opacity 0.2s;
+}
+
+.actionButton:hover {
+    opacity: 0.8;
+}
+
+.editButton {
+    background-color: #28a745;
+}
+
 .error {
-    color: #d9534f;
+    color: #dc3545;
     font-weight: bold;
 }
 
-:global(body.dark-mode) .atendimentosTable th,
+:global(body.dark-mode) .mainContent {
+    background-color: #0D1117;
+}
+
+:global(body.dark-mode) .mainContent h2 {
+    color: #c9d1d9;
+}
+
+:global(body.dark-mode) .tableContainer {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    box-shadow: none;
+}
+
+:global(body.dark-mode) .atendimentosTable th {
+    color: #8b949e;
+    background-color: #161b22;
+    border-bottom-color: #30363d;
+}
+
 :global(body.dark-mode) .atendimentosTable td {
-    color: #f0f0f0; 
+    color: #c9d1d9;
+    border-bottom-color: #30363d;
+}
+
+:global(body.dark-mode) .actionButton {
+    background-color: #238636;
+    color: #ffffff;
+    border-color: transparent;
 }
