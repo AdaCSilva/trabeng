@@ -11,8 +11,14 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
 
+// CONEXÃO VOLTOU AO MÉTODO ORIGINAL QUE FUNCIONAVA
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    // Adicione a configuração SSL se o seu amigo estiver usando na Render
     ssl: {
         rejectUnauthorized: false
     }
@@ -98,7 +104,6 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     }
 });
 
-// --- ROTAS DE ATENDIMENTO ---
 app.get('/api/atendimentos', async (req, res) => {
     try {
         const query = `
@@ -121,7 +126,7 @@ app.get('/api/atendimentos', async (req, res) => {
     }
 });
 
-// --- Iniciar o Servidor ---
+
 app.listen(PORT, () => {
     console.log(`Servidor backend rodando na porta ${PORT}`);
 });
