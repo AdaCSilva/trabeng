@@ -1,13 +1,13 @@
-
 CREATE DATABASE conselhotutelar;
 
+-- CRIAÇÃO DOS TIPOS ENUMERADOS (ENUMS)
 CREATE TYPE sexo_enum AS ENUM('M', 'F', 'Outro');
 CREATE TYPE perfil_enum AS ENUM('Conselheiro', 'Assistente Social', 'Psicólogo', 'Administrador', 'Secretario');
 CREATE TYPE orgao_tipo_enum AS ENUM('Escola', 'Hospital', 'Delegacia', 'Ministério Público');
 
--- 5. Tabela para armazenar informações de endereço
+-- Tabela para armazenar informações de endereço
 CREATE TABLE Endereco (
-    id_endereco SERIAL PRIMARY KEY, -- SERIAL para auto-incremento no PostgreSQL
+    id_endereco SERIAL PRIMARY KEY,
     rua VARCHAR(255) NOT NULL,
     numero VARCHAR(10),
     complemento VARCHAR(100),
@@ -17,35 +17,36 @@ CREATE TABLE Endereco (
     cep VARCHAR(9)
 );
 
--- 6. Tabela Crianca
+-- Tabela Crianca
 CREATE TABLE Crianca (
     id_crianca SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE,
-    sexo sexo_enum, -- Usando o tipo ENUM criado
+    sexo sexo_enum,
     escolaridade VARCHAR(50),
     id_endereco INT,
     FOREIGN KEY (id_endereco) REFERENCES Endereco(id_endereco)
 );
 
--- 7. Tabela de Usuários
+-- Tabela de Usuários
 CREATE TABLE Usuario (
     id_usuario SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     login VARCHAR(50) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
-    perfil perfil_enum NOT NULL -- Usando o tipo ENUM criado
+    perfil perfil_enum NOT NULL
 );
 
--- 8. Tabela Caso (Atendimento)
+-- Tabela Caso (Atendimento) -- MODIFICADA
 CREATE TABLE Caso (
     id_caso SERIAL PRIMARY KEY,
     data_abertura DATE NOT NULL,
-    status VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'Em andamento', -- VALOR PADRÃO ADICIONADO
     descricao_ocorrencia TEXT,
     medidas_adotadas TEXT,
     id_crianca INT NOT NULL,
-    data_hora_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- TIMESTAMP para data e hora
+    data_hora_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_finalizacao TIMESTAMP, -- COLUNA ADICIONADA
     codigo_atendimento VARCHAR(50),
     id_conselheira_atendimento INT,
     numero_procedimento VARCHAR(15),
@@ -53,7 +54,7 @@ CREATE TABLE Caso (
     FOREIGN KEY (id_conselheira_atendimento) REFERENCES Usuario(id_usuario)
 );
 
--- 9. Tabela Responsavel
+-- Tabela Responsavel
 CREATE TABLE Responsavel (
     id_responsavel SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -65,7 +66,7 @@ CREATE TABLE Responsavel (
     FOREIGN KEY (id_caso) REFERENCES Caso(id_caso)
 );
 
--- 10. Tabela Documento
+-- Tabela Documento
 CREATE TABLE Documento (
     id_documento SERIAL PRIMARY KEY,
     tipo_documento VARCHAR(50),
@@ -75,7 +76,7 @@ CREATE TABLE Documento (
     FOREIGN KEY (id_caso) REFERENCES Caso(id_caso)
 );
 
--- 11. Tabela Relatorio
+-- Tabela Relatorio
 CREATE TABLE Relatorio (
     id_relatorio SERIAL PRIMARY KEY,
     tipo VARCHAR(50),
@@ -85,15 +86,15 @@ CREATE TABLE Relatorio (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario)
 );
 
--- 12. Tabela Orgao_Externo
+-- Tabela Orgao_Externo
 CREATE TABLE Orgao_Externo (
     id_orgao SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    tipo orgao_tipo_enum, -- Usando o tipo ENUM criado
+    tipo orgao_tipo_enum,
     contato VARCHAR(100)
 );
 
--- 13. Tabela Compartilhamento
+-- Tabela Compartilhamento
 CREATE TABLE Compartilhamento (
     id_compartilhamento SERIAL PRIMARY KEY,
     data_envio DATE NOT NULL,
@@ -102,33 +103,4 @@ CREATE TABLE Compartilhamento (
     id_orgao INT NOT NULL,
     FOREIGN KEY (id_caso) REFERENCES Caso(id_caso),
     FOREIGN KEY (id_orgao) REFERENCES Orgao_Externo(id_orgao)
-);
-
--- 14. Inserção de usuários de teste (opcional)
-INSERT INTO Usuario (nome, login, senha, perfil) VALUES
-('Admin Teste', 'admin', '$2b$10$dDqmE4lsm7kbpPg2LzLgCe0QQ5GuVdDEKBAyTLA0BbICpK5228gU2', 'Administrador'),
-('Conselheiro Teste', 'conselheiro', '$2b$10$z5kWLB3AdMfar6nuPAssge90Z3kEswG6tzDnuZ1.qf7pkY1YTcdnK', 'Conselheiro'),
-('Secretario Teste', 'secretario', '$2b$10$erPEzgaPVSiQaa5POiamge9iQ8pFw6G1uTgQVcGEOrM8HKQ0y1hwq', 'Secretario'),
-('Ana Conselheira', 'ana', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Conselheiro'),
-('Bruno Assistente', 'bruno', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Assistente Social'),
-('Carla Psicologa', 'carla', '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6', 'Psicólogo');
-
--- Atualiza a senha do usuário 'admin'
-UPDATE Usuario SET senha = '$2b$10$P.8Fj7j1Wr1jYmolRIU.DegCDv96bzxVrtA.q/P0HwrPXhem63bT.' WHERE login = 'admin';
-
--- Atualiza a senha do usuário 'conselheiro'
-UPDATE Usuario SET senha = '$2b$10$z5kWLB3AdMfar6nuPAssge90Z3kEswG6tzDnuZ1.qf7pkY1YTcdnK' WHERE login = 'conselheiro';
-
--- Atualiza a senha do usuário 'secretario'
-UPDATE Usuario SET senha = '$2b$10$erPEzgaPVSiQaa5POiamge9iQ8pFw6G1uTgQVcGEOrM8HKQ0y1hwq' WHERE login = 'secretario';
-
--- Atualiza a senha do usuário 'ana'
-UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'ana';
-
--- Atualiza a senha do usuário 'bruno'
-UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'bruno';
-
--- Atualiza a senha do usuário 'carla'
-UPDATE Usuario SET senha = '$2b$10$EMIZ.XSqfqjAN2JXsrMSA.mSS7UkfAFgQXEqa0xR14inpbNHlIef6' WHERE login = 'carla';
-
-SELECT login, senha FROM Usuario WHERE login = 'admin';
+); 

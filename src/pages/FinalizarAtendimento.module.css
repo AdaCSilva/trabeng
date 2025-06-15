@@ -1,0 +1,50 @@
+/* src/pages/FinalizarAtendimento.module.css */
+.container {
+    padding: 2rem;
+}
+
+.listaAtendimentos {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.5rem;
+}
+
+.cardAtendimento {
+    background-color: var(--background-light);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.cardAtendimento h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.cardAtendimento p {
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.finalizarButton {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    align-self: flex-end; /* Alinha o botão à direita */
+    transition: background-color 0.2s;
+}
+
+.finalizarButton:hover {
+    background-color: #218838;
+}
+
+.error {
+    color: #e74c3c;
+}

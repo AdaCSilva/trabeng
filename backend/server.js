@@ -134,7 +134,7 @@ app.post('/api/atendimentos', async (req, res) => {
 
         const dataAbertura = new Date().toISOString().slice(0, 10);
         const dataHoraRegistro = new Date();
-        const statusCaso = 'Em Andamento';
+        const statusCaso = 'Em andamento'; // Mantido o novo padrão "Em andamento"
 
         const resultCaso = await client.query(
             'INSERT INTO Caso (data_abertura, status, descricao_ocorrencia, medidas_adotadas, id_crianca, data_hora_registro, codigo_atendimento, id_conselheira_atendimento) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_caso',
@@ -176,25 +176,62 @@ app.post('/api/atendimentos', async (req, res) => {
 });
 
 
-// ROTA: GET /api/atendimentos para listar todos os atendimentos
+// ROTA: GET /api/atendimentos (MODIFICADA PARA ACEITAR FILTRO POR STATUS)
 app.get('/api/atendimentos', async (req, res) => {
+    const { status } = req.query; // Pega o status da URL, ex: /api/atendimentos?status=Em andamento
+
     try {
-        const { rows } = await pool.query(
-            `SELECT
-                ca.id_caso, ca.data_abertura, ca.status, ca.numero_procedimento,
+        let query = `
+            SELECT
+                ca.id_caso, ca.data_abertura, ca.status, ca.numero_procedimento, ca.descricao_ocorrencia,
                 c.nome AS nomeCrianca,
                 u.nome AS nomeConselheira
             FROM Caso ca
             JOIN Crianca c ON ca.id_crianca = c.id_crianca
             LEFT JOIN Usuario u ON ca.id_conselheira_atendimento = u.id_usuario
-            ORDER BY ca.data_abertura DESC`
-        );
+        `;
+        const values = [];
+
+        if (status) {
+            query += ' WHERE ca.status = $1';
+            values.push(status);
+        }
+
+        query += ' ORDER BY ca.data_abertura DESC';
+
+        const { rows } = await pool.query(query, values);
         res.status(200).json(rows);
     } catch (error) {
         console.error('Erro ao listar atendimentos:', error);
         res.status(500).json({ message: 'Erro interno do servidor ao listar atendimentos.' });
     }
 });
+
+// >>> NOVA ROTA PARA FINALIZAR ATENDIMENTO <<<
+app.put('/api/atendimentos/:id/finalizar', async (req, res) => {
+    const { id } = req.params;
+    const data_finalizacao = new Date();
+    const status = 'Finalizado';
+
+    try {
+        const query = 'UPDATE Caso SET status = $1, data_finalizacao = $2 WHERE id_caso = $3 RETURNING *';
+        const values = [status, data_finalizacao, id];
+
+        const { rows } = await pool.query(query, values);
+        
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Atendimento não encontrado' });
+        }
+        
+        // Retorna o atendimento atualizado
+        res.status(200).json(rows[0]);
+
+    } catch (error) {
+        console.error(`Erro ao finalizar atendimento ${id}:`, error);
+        res.status(500).json({ message: 'Erro interno do servidor ao finalizar atendimento.' });
+    }
+});
+
 
 // Rota para buscar um atendimento específico por ID
 app.get('/api/atendimentos/:id', async (req, res) => {
