@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styles from './GerenciarUsuarios.module.css';
-import AddUserModal from '../components/AddUserModal'; // Importa o modal
+import AddUserModal from '../components/AddUserModal';
+import EditUserModal from '../components/EditUserModal';
 
 function GerenciarUsuarios() {
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controlar o modal
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const [editingUser, setEditingUser] = useState(null);
 
     const fetchUsuarios = async () => {
         setLoading(true);
@@ -29,9 +34,34 @@ function GerenciarUsuarios() {
         fetchUsuarios();
     }, []);
 
-    const handleUserAdded = () => {
-        // Atualiza a lista de usuários após adicionar um novo
-        fetchUsuarios(); 
+    const handleDataChanged = () => {
+        fetchUsuarios();
+    };
+
+    const handleEditClick = (user) => {
+        setEditingUser(user);
+        setIsEditModalOpen(true);
+    };
+
+    const handleDeleteClick = async (userId) => {
+        if (window.confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) {
+            const apiUrl = process.env.REACT_APP_API_URL;
+            try {
+                const response = await fetch(`${apiUrl}/api/usuarios/${userId}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Falha ao excluir o usuário.');
+                }
+
+                alert('Usuário excluído com sucesso!');
+                fetchUsuarios();
+            } catch (err) {
+                alert(`Erro ao excluir usuário: ${err.message}`);
+            }
+        }
     };
 
     return (
@@ -39,16 +69,16 @@ function GerenciarUsuarios() {
             <main className={styles.mainContent}>
                 <div className={styles.header}>
                     <h2>Gerenciar Usuários</h2>
-                    <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>
+                    <button onClick={() => setIsAddModalOpen(true)} className={styles.addButton}>
                         Adicionar Novo Usuário
                     </button>
                 </div>
 
                 {loading && <p>Carregando...</p>}
                 {error && <p className={styles.error}>Erro: {error}</p>}
+
                 {!loading && !error && (
                     <div className={styles.tableContainer}>
-                        {/* A tabela continua a mesma */}
                         <table className={styles.usersTable}>
                             <thead>
                                 <tr>
@@ -66,8 +96,12 @@ function GerenciarUsuarios() {
                                             <td>{usuario.login}</td>
                                             <td>{usuario.perfil}</td>
                                             <td className={styles.actions}>
-                                                <button className={styles.actionButton}>Editar</button>
-                                                <button className={`${styles.actionButton} ${styles.deleteButton}`}>Excluir</button>
+                                                <button onClick={() => handleEditClick(usuario)} className={styles.actionButton}>
+                                                    Editar
+                                                </button>
+                                                <button onClick={() => handleDeleteClick(usuario.id_usuario)} className={`${styles.actionButton} ${styles.deleteButton}`}>
+                                                    Excluir
+                                                </button>
                                             </td>
                                         </tr>
                                     ))
@@ -82,11 +116,18 @@ function GerenciarUsuarios() {
                 )}
             </main>
 
-            {/* Renderiza o modal condicionalmente */}
-            {isModalOpen && (
-                <AddUserModal 
-                    onClose={() => setIsModalOpen(false)} 
-                    onUserAdded={handleUserAdded}
+            {isAddModalOpen && (
+                <AddUserModal
+                    onClose={() => setIsAddModalOpen(false)}
+                    onUserAdded={handleDataChanged}
+                />
+            )}
+
+            {isEditModalOpen && (
+                <EditUserModal
+                    user={editingUser}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onUserUpdated={handleDataChanged}
                 />
             )}
         </div>
