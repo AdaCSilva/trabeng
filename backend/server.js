@@ -178,12 +178,19 @@ app.post('/api/atendimentos', async (req, res) => {
 
 // ROTA: GET /api/atendimentos (MODIFICADA PARA ACEITAR FILTRO POR STATUS)
 app.get('/api/atendimentos', async (req, res) => {
-    const { status } = req.query; // Pega o status da URL, ex: /api/atendimentos?status=Em andamento
+    const { status } = req.query; 
 
     try {
+        // A 'query' SQL foi atualizada para incluir o campo que faltava
         let query = `
             SELECT
-                ca.id_caso, ca.data_abertura, ca.status, ca.numero_procedimento, ca.descricao_ocorrencia,
+                ca.id_caso, 
+                ca.data_abertura, 
+                ca.status, 
+                ca.numero_procedimento, 
+                ca.descricao_ocorrencia, 
+                ca.medidas_adotadas, -- <<< ESTE CAMPO FOI ADICIONADO AQUI
+                ca.id_conselheira_atendimento,
                 c.nome AS nomeCrianca,
                 u.nome AS nomeConselheira
             FROM Caso ca
