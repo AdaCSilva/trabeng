@@ -193,7 +193,7 @@ app.get('/api/atendimentos', async (req, res) => {
         const values = [];
 
         if (status) {
-            query += ' WHERE ca.status = $1';
+            query += ' WHERE LOWER(ca.status) = LOWER($1)';
             values.push(status);
         }
 
