@@ -1,4 +1,3 @@
-/* Reset básico */
 *,
 *::before,
 *::after {
@@ -7,144 +6,44 @@
   padding: 0;
 }
 
-/* Fontes e ícones do Google */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-/* Variáveis CSS para cores e sombras */
 :root {
-  --bg-page: #fefefe;
+  --bg-page: #f0f2f5;
   --bg-card: #ffffff;
-  --shadow: 0 4px 10px rgba(0,0,0,0.1);
-  --text-primary: #212529;
-  --border: #ced4da;
-  --input-bg: #f8f9fa;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
   --btn-primary: #007bff;
   --btn-primary-hover: #0056b3;
   --btn-success: #28a745;
   --btn-success-hover: #1e7e34;
+  --shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-/* Tema escuro */
 body.dark {
-  --bg-page: #121212;
-  --bg-card: #1e1e1e;
-  --shadow: 0 4px 10px rgba(0,0,0,0.6);
-  --text-primary: #eee;
-  --border: #444;
-  --input-bg: #2a2a2a;
-  --btn-primary: #3399ff;
-  --btn-primary-hover: #1a73e8;
-  --btn-success: #4caf50;
-  --btn-success-hover: #357a38;
+  --bg-page: #0D1117;
+  --bg-card: #161b22;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --border-color: #30363d;
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-success: #22c55e;
+  --btn-success-hover: #16a34a;
+  --shadow: none;
 }
 
-/* Corpo da página */
 body {
   background-color: var(--bg-page);
   color: var(--text-primary);
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
 }
 
-/* Links */
 a {
   color: inherit;
   text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-a:hover,
-a:focus {
-  text-decoration: underline;
-  outline: none;
-}
-
-/* Botões padrão */
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 20px;
-  font-weight: 700;
-  color: white;
-  background-color: var(--btn-primary);
-  transition: background-color 0.3s ease;
-}
-
-button:hover,
-button:focus {
-  background-color: var(--btn-primary-hover);
-  outline: none;
-}
-
-/* Inputs e textareas */
-input,
-textarea,
-select {
-  font-family: inherit;
-  font-size: 1rem;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background-color: var(--input-bg);
-  color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--btn-primary);
-  outline: none;
-  background-color: var(--bg-card);
-}
-
-/* Responsividade básica */
-.container {
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-/* Scrollbar customizado para navegadores baseados em WebKit */
-body::-webkit-scrollbar {
-  width: 10px;
-}
-
-body::-webkit-scrollbar-track {
-  background: var(--bg-page);
-}
-
-body::-webkit-scrollbar-thumb {
-  background-color: var(--btn-primary);
-  border-radius: 10px;
-  border: 2px solid var(--bg-page);
-}
-
-/* Textos gerais */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-p {
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-/* Material Icons base */
-.material-icons {
-  font-size: 24px;
-  vertical-align: middle;
-  color: var(--btn-primary);
-  user-select: none;
 }
