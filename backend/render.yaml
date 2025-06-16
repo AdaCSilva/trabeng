@@ -1,0 +1,29 @@
+# Exported from Render on 2025-06-16T01:01:05Z
+services:
+- type: web
+  name: conselhotutelar-backend
+  runtime: node
+  repo: https://github.com/AdaCSilva/trabeng
+  plan: free
+  envVars:
+  - key: REACT_APP_API_URL
+    sync: false
+  - key: PORT
+    sync: false
+  - key: DB_PORT
+    sync: false
+  - key: DB_NAME
+    sync: false
+  - key: DB_PASSWORD
+    sync: false
+  - key: DB_USER
+    sync: false
+  - key: DB_HOST
+    sync: false
+  region: oregon
+  buildCommand: npm install
+  startCommand: node server.js
+  healthCheckPath: /
+  autoDeployTrigger: commit
+  rootDir: backend/
+version: "1"
