@@ -1,103 +1,118 @@
+/* src/pages/DetalheAtendimento.module.css */
 .container {
     padding: 2rem;
-    background-color: #f4f7fa;
-    min-height: calc(100vh - 60px); /* 60px é a altura do header */
-}
-
-.mainContent {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #ddd;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.mainContent h2 {
-    color: #333;
+.header h1 {
     margin: 0;
+    font-size: 2rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.backButton, .editButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s;
 }
 
 .backButton {
+    background-color: #6c757d;
+    color: white;
+}
+.backButton:hover {
+    background-color: #5a6268;
+}
+
+.editButton {
     background-color: #007bff;
     color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s;
 }
-
-.backButton:hover {
+.editButton:hover {
     background-color: #0056b3;
-}
-
-.sectionTitle {
-    color: #333;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.5rem;
 }
 
 .detailsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: 1.5rem;
 }
 
-.detailItem strong {
-    display: block;
-    color: #555;
-    margin-bottom: 5px;
-    font-weight: 600;
+.card {
+    background: #ffffff;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.detailItem p {
-    margin: 0;
-    color: #333;
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f1f1f1;
+    padding-bottom: 0.75rem;
+    color: #343a40;
 }
 
-.fullWidth {
-    grid-column: 1 / -1;
-}
-
-.fullWidthBox {
-    background-color: #f9f9f9;
-    border-left: 4px solid #007bff;
-    padding: 1rem;
-    margin-top: 1rem;
-    border-radius: 4px;
-}
-
-.fullWidthBox strong {
-    display: block;
-    margin-bottom: 8px;
-}
-
-.fullWidthBox p {
-    margin: 0;
-    white-space: pre-wrap; /* Preserva quebras de linha e espaços */
+.card p {
+    margin: 0.5rem 0;
     line-height: 1.6;
 }
 
-.centered {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50vh;
-    font-size: 1.2rem;
+.fullWidth {
+    grid-column: 1 / -1; /* O card ocupa a largura total */
 }
 
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.infoRow > div {
+    width: 48%;
+}
+
+.textAreaContent {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    white-space: pre-wrap; /* Mantém as quebras de linha */
+    min-height: 60px;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9em;
+}
+
+.status.EmAndamento { background-color: #ffc107; color: #333; }
+.status.Finalizado { background-color: #28a745; }
+.status.Arquivado { background-color: #6c757d; }
+
 .error {
-    color: #d9534f;
+    color: #dc3545;
+    text-align: center;
+    font-size: 1.2rem;
 }

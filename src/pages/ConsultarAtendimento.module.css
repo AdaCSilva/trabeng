@@ -1,109 +1,138 @@
+/* src/pages/ConsultarAtendimento.module.css - Versão Melhorada */
+
 .container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-.mainContent {
-    flex-grow: 1;
     padding: 2rem;
-    background-color: #f9fafb;
-    transition: background-color 0.3s ease;
+    max-width: 1400px; /* Limita a largura para melhor leitura em telas grandes */
+    margin: 0 auto;
+    background-color: #f9fafb; /* Um fundo levemente acinzentado */
+    min-height: calc(100vh - 80px); /* Ocupa a altura da tela menos o header */
 }
 
-.mainContent h2 {
-    margin: 0;
-    margin-bottom: 2rem;
+.container h1 {
+    font-size: 2.25rem;
     color: #111827;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
 }
 
-.tableContainer {
-    background-color: #ffffff;
+/* --- Estilo do Campo de Busca --- */
+.searchContainer {
+    margin-bottom: 2.5rem;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #3b82f6; /* Azul para o foco */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* --- Layout da Lista de Atendimentos --- */
+.listaAtendimentos {
+    display: grid;
+    /* Cria colunas que se ajustam automaticamente ao tamanho da tela */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem; /* Espaçamento entre os cards */
+}
+
+/* --- Estilo do Card de Atendimento --- */
+.cardLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.cardLink:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.cardAtendimento {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Garante que todos os cards tenham a mesma altura */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.atendimentosTable {
-    width: 100%;
-    border-collapse: collapse;
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
 }
 
-.atendimentosTable th,
-.atendimentosTable td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb; 
-    color: #374151;
+.cardHeader h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.1rem;
 }
 
-.atendimentosTable th {
+.cardAtendimento p {
+    margin: 0.25rem 0;
+    color: #4b5563;
+    flex-grow: 1; /* Faz o conteúdo ocupar o espaço e empurra as ações para baixo */
+}
+
+/* --- Estilo do Status (Pílula) --- */
+.status {
+    padding: 5px 12px;
+    border-radius: 9999px; /* Pílula arredondada */
+    font-weight: 600;
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: #6b7280;
-    background-color: #f9fafb;
+    white-space: nowrap;
 }
 
-.atendimentosTable tbody tr:last-child td {
-    border-bottom: none;
-}
+.status.EmAndamento { background-color: #fef3c7; color: #92400e; }
+.status.Finalizado { background-color: #d1fae5; color: #065f46; }
+.status.Arquivado { background-color: #e5e7eb; color: #4b5563; }
 
-.actions {
+
+/* --- Estilo das Ações no Card --- */
+.cardActions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6;
     display: flex;
-    gap: 10px;
+    justify-content: flex-end;
 }
 
 .actionButton {
-    padding: 6px 12px;
-    border: 1px solid transparent;
-    border-radius: 4px;
+    background-color: #f9fafb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    padding: 8px 16px;
+    font-weight: 600;
+    border-radius: 6px;
     cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    transition: opacity 0.2s;
+    transition: background-color 0.2s;
 }
 
 .actionButton:hover {
-    opacity: 0.8;
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
 }
 
-.editButton {
-    background-color: #28a745;
-}
-
+/* --- Estilos de feedback --- */
 .error {
-    color: #dc3545;
-    font-weight: bold;
-}
-
-:global(body.dark-mode) .mainContent {
-    background-color: #0D1117;
-}
-
-:global(body.dark-mode) .mainContent h2 {
-    color: #c9d1d9;
-}
-
-:global(body.dark-mode) .tableContainer {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    box-shadow: none;
-}
-
-:global(body.dark-mode) .atendimentosTable th {
-    color: #8b949e;
-    background-color: #161b22;
-    border-bottom-color: #30363d;
-}
-
-:global(body.dark-mode) .atendimentosTable td {
-    color: #c9d1d9;
-    border-bottom-color: #30363d;
-}
-
-:global(body.dark-mode) .actionButton {
-    background-color: #238636;
-    color: #ffffff;
-    border-color: transparent;
+    color: #991b1b;
+    background-color: #fee2e2;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
 }

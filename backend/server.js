@@ -248,6 +248,7 @@ app.get('/api/atendimentos/:id', async (req, res) => {
             `SELECT
                 ca.id_caso, ca.data_abertura, ca.status, ca.descricao_ocorrencia, ca.medidas_adotadas,
                 ca.codigo_atendimento, ca.numero_procedimento, ca.data_hora_registro,
+                ca.id_conselheira_atendimento, -- <<< ESTE CAMPO FOI ADICIONADO AQUI
                 c.nome AS nomeCrianca, c.data_nascimento, c.sexo, c.escolaridade,
                 u.nome AS nomeConselheira,
                 ARRAY_AGG(DISTINCT CONCAT(r.nome, ' (', r.grau_parentesco, ')')) AS nomesResponsaveis,

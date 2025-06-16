@@ -1,123 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './DetalheAtendimento.module.css';
+import EditAtendimentoModal from '../components/EditAtendimentoModal'; // Importe o modal
 
 function DetalheAtendimento() {
     const { id } = useParams(); // Pega o ID da URL
+    const navigate = useNavigate();
     const [atendimento, setAtendimento] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
+
+    // Estado para controlar o modal de edição
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Usamos useCallback para evitar recriar a função em cada renderização
+    const fetchAtendimento = useCallback(async () => {
+        setLoading(true);
+        try {
+            const apiUrl = process.env.REACT_APP_API_URL || '';
+            const response = await fetch(`${apiUrl}/api/atendimentos/${id}`);
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.message || 'Atendimento não encontrado');
+            }
+            const data = await response.json();
+            setAtendimento(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [id]);
 
     useEffect(() => {
-        const fetchDetalhes = async () => {
-            const apiUrl = process.env.REACT_APP_API_URL;
-            try {
-                setLoading(true);
-                const response = await fetch(`${apiUrl}/api/atendimentos/${id}`);
-                if (!response.ok) {
-                    throw new Error('Não foi possível carregar os detalhes do atendimento.');
-                }
-                const data = await response.json();
-                setAtendimento(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+        fetchAtendimento();
+    }, [fetchAtendimento]);
 
-        fetchDetalhes();
-    }, [id]); // Roda o efeito sempre que o ID na URL mudar
+    // Função para ser chamada quando o atendimento for atualizado no modal
+    const handleAtendimentoUpdated = (atendimentoAtualizado) => {
+        setAtendimento(atendimentoAtualizado); // Atualiza os dados na tela instantaneamente
+    };
 
-    if (loading) {
-        return <div className={styles.centered}>Carregando detalhes...</div>;
-    }
+    if (loading) return <p>Carregando detalhes do atendimento...</p>;
+    if (error) return <p className={styles.error}>Erro: {error}</p>;
+    if (!atendimento) return <p>Atendimento não encontrado.</p>;
 
-    if (error) {
-        return <div className={`${styles.centered} ${styles.error}`}>Erro: {error}</div>;
-    }
-
-    if (!atendimento) {
-        return <div className={styles.centered}>Atendimento não encontrado.</div>;
-    }
+    // Formata os endereços para exibição
+    const enderecos = atendimento.enderecosresponsaveis?.filter(e => e).join(', ') || 'Não informado';
 
     return (
         <div className={styles.container}>
-            <main className={styles.mainContent}>
-                <div className={styles.header}>
-                    <h2>Detalhes do Atendimento</h2>
-                    <Link to="/consulta-atendimento" className={styles.backButton}>Voltar para a Lista</Link>
+            <div className={styles.header}>
+                <h1>Detalhes do Atendimento</h1>
+                <div className={styles.headerActions}>
+                     <button onClick={() => setIsModalOpen(true)} className={styles.editButton}>Editar</button>
+                     <button onClick={() => navigate(-1)} className={styles.backButton}>Voltar</button>
                 </div>
+            </div>
 
-                <div className={styles.detailsGrid}>
-                    <div className={styles.detailItem}>
-                        <strong>Nº do Procedimento:</strong>
-                        <p>{atendimento.numero_procedimento || 'N/A'}</p>
+            <div className={styles.detailsGrid}>
+                {/* Card de Informações Principais */}
+                <div className={`${styles.card} ${styles.fullWidth}`}>
+                    <h3>Informações do Caso</h3>
+                    <div className={styles.infoRow}>
+                        <div><strong>Nº do Procedimento:</strong> {atendimento.numero_procedimento}</div>
+                        <div><strong>Status:</strong> <span className={`${styles.status} ${styles[atendimento.status?.replace(/\s+/g, '')]}`}>{atendimento.status}</span></div>
                     </div>
-                    <div className={styles.detailItem}>
-                        <strong>Código do Atendimento:</strong>
-                        <p>{atendimento.codigo_atendimento || 'N/A'}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Data de Abertura:</strong>
-                        <p>{new Date(atendimento.data_abertura).toLocaleDateString()}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Status:</strong>
-                        <p>{atendimento.status}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Conselheiro(a) Responsável:</strong>
-                        <p>{atendimento.nomeconselheira || 'Não atribuído'}</p>
+                    <div className={styles.infoRow}>
+                        <div><strong>Data de Abertura:</strong> {new Date(atendimento.data_abertura).toLocaleDateString('pt-BR')}</div>
+                        <div><strong>Conselheiro(a) Responsável:</strong> {atendimento.nomeconselheira || 'Não atribuído'}</div>
                     </div>
                 </div>
 
-                <h3 className={styles.sectionTitle}>Informações da Criança/Adolescente</h3>
-                <div className={styles.detailsGrid}>
-                    <div className={styles.detailItem}>
-                        <strong>Nome:</strong>
-                        <p>{atendimento.nomecrianca}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Data de Nascimento:</strong>
-                        <p>{new Date(atendimento.data_nascimento).toLocaleDateString()}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Sexo:</strong>
-                        <p>{atendimento.sexo}</p>
-                    </div>
-                     <div className={styles.detailItem}>
-                        <strong>Escolaridade:</strong>
-                        <p>{atendimento.escolaridade}</p>
-                    </div>
+                {/* Card da Criança */}
+                <div className={styles.card}>
+                    <h3>Criança/Adolescente</h3>
+                    <p><strong>Nome:</strong> {atendimento.nomecrianca}</p>
+                    <p><strong>Data de Nascimento:</strong> {atendimento.data_nascimento ? new Date(atendimento.data_nascimento).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+                    <p><strong>Sexo:</strong> {atendimento.sexo || 'Não informado'}</p>
+                    <p><strong>Escolaridade:</strong> {atendimento.escolaridade || 'Não informada'}</p>
                 </div>
 
-                <h3 className={styles.sectionTitle}>Informações dos Responsáveis</h3>
-                <div className={styles.detailsGrid}>
-                     <div className={styles.detailItem}>
-                        <strong>Nome(s):</strong>
-                        <p>{atendimento.nomesresponsaveis?.join(', ') || 'N/A'}</p>
-                    </div>
-                    <div className={styles.detailItem}>
-                        <strong>Telefone(s):</strong>
-                        <p>{atendimento.telefonesresponsaveis?.join(', ') || 'N/A'}</p>
-                    </div>
-                    <div className={`${styles.detailItem} ${styles.fullWidth}`}>
-                        <strong>Endereço(s):</strong>
-                        <p>{atendimento.enderecosresponsaveis?.join('; ') || 'N/A'}</p>
-                    </div>
+                {/* Card dos Responsáveis */}
+                <div className={styles.card}>
+                    <h3>Responsáveis</h3>
+                    <p><strong>Nomes:</strong> {atendimento.nomesresponsaveis?.filter(r => r).join(', ') || 'Não informado'}</p>
+                    <p><strong>Telefones:</strong> {atendimento.telefonesresponsaveis?.filter(t => t).join(', ') || 'Não informado'}</p>
+                    <p><strong>Endereço:</strong> {enderecos}</p>
                 </div>
 
-                <h3 className={styles.sectionTitle}>Descrição do Caso</h3>
-                <div className={styles.fullWidthBox}>
-                    <strong>Descrição da Ocorrência:</strong>
-                    <p>{atendimento.descricao_ocorrencia}</p>
+                {/* Card da Ocorrência */}
+                <div className={`${styles.card} ${styles.fullWidth}`}>
+                    <h3>Descrição e Medidas</h3>
+                    <h4>Descrição da Ocorrência:</h4>
+                    <p className={styles.textAreaContent}>{atendimento.descricao_ocorrencia}</p>
+                    <h4>Medidas Adotadas:</h4>
+                    <p className={styles.textAreaContent}>{atendimento.medidas_adotadas}</p>
                 </div>
-                <div className={styles.fullWidthBox}>
-                    <strong>Medidas Adotadas:</strong>
-                    <p>{atendimento.medidas_adotadas}</p>
-                </div>
-            </main>
+            </div>
+
+            {/* Renderiza o modal de edição se isModalOpen for true */}
+            {isModalOpen && (
+                <EditAtendimentoModal
+                    atendimento={atendimento}
+                    onClose={() => setIsModalOpen(false)}
+                    onAtendimentoUpdated={handleAtendimentoUpdated}
+                />
+            )}
         </div>
     );
 }
