@@ -37,8 +37,7 @@ function EditAtendimentoModal({ atendimento, onClose, onAtendimentoUpdated }) {
         setError('');
 
         const apiUrl = process.env.REACT_APP_API_URL;
-        // ATENÇÃO: Verifique com seu amigo se a rota é /api/casos/ ou /api/atendimentos/
-        const updateUrl = `${apiUrl}/api/casos/${atendimento.id_caso}`;
+        const updateUrl = `${apiUrl}/api/atendimentos/${atendimento.id_caso}`;
 
         try {
             const response = await fetch(updateUrl, {

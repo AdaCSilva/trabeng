@@ -271,6 +271,49 @@ app.get('/api/atendimentos/:id', async (req, res) => {
     }
 });
 
+// >>> ROTA PARA EDITAR UM ATENDIMENTO (PUT) <<<
+app.put('/api/atendimentos/:id', async (req, res) => {
+    const { id } = req.params;
+    // Pegando os campos que podem ser editados do corpo da requisição
+    const { descricao_ocorrencia, medidas_adotadas, status, id_conselheira_atendimento } = req.body;
+
+    // Validação básica
+    if (!descricao_ocorrencia || !medidas_adotadas || !status) {
+        return res.status(400).json({ message: 'Descrição, medidas adotadas e status são campos obrigatórios.' });
+    }
+
+    try {
+        const query = `
+            UPDATE Caso 
+            SET 
+                descricao_ocorrencia = $1, 
+                medidas_adotadas = $2, 
+                status = $3, 
+                id_conselheira_atendimento = $4
+            WHERE id_caso = $5
+            RETURNING *; 
+        `;
+        
+        const values = [descricao_ocorrencia, medidas_adotadas, status, id_conselheira_atendimento, id];
+        
+        const { rows } = await pool.query(query, values);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'Atendimento não encontrado para edição.' });
+        }
+
+        console.log('Atendimento atualizado com sucesso:', rows[0]);
+        res.status(200).json({ 
+            message: 'Atendimento atualizado com sucesso!', 
+            atendimento: rows[0] 
+        });
+
+    } catch (error) {
+        console.error(`Erro CRÍTICO ao atualizar o atendimento ${id}:`, error);
+        res.status(500).json({ message: 'Erro interno do servidor ao atualizar o atendimento.' });
+    }
+});
+
 // Rota para buscar todos os usuários com perfil de conselheiro
 app.get('/api/usuarios/conselheiros', async (req, res) => {
     try {
