@@ -1,29 +1,67 @@
-# Exported from Render on 2025-06-16T01:02:46Z
+# Define o banco de dados que será usado pelo backend
+databases:
+  - name: conselhotutelar      # Você pode nomear como quiser
+    databaseName: conselhotutelar
+    user: conselho_user
+    plan: free
+    region: oregon                # Mantendo a mesma região dos seus serviços
+
+# Define os dois serviços: frontend e backend
 services:
-- type: web
-  name: conselhotutelarmoc
-  runtime: static
-  repo: https://github.com/AdaCSilva/trabeng
-  envVars:
-  - key: REACT_APP_API_URL
-    sync: false
-  - key: PORT
-    sync: false
-  - key: DB_NAME
-    sync: false
-  - key: DB_PASSWORD
-    sync: false
-  - key: DB_USER
-    sync: false
-  - key: DB_HOST
-    sync: false
-  - key: .env
-    sync: false
-  buildCommand: npm run build
-  staticPublishPath: build
-  routes:
-  - type: rewrite
-    source: /*
-    destination: /index.html
-  autoDeployTrigger: commit
-version: "1"
+  # --- Serviço 1: API (Backend) ---
+  - type: web
+    name: conselhotutelar-backend # Mantido do seu arquivo exportado
+    runtime: node
+    region: oregon
+    plan: free
+    healthCheckPath: /
+    rootDir: backend/             # O código da API fica nesta pasta
+    buildCommand: "npm install"
+    startCommand: "node server.js"
+    envVars:
+      # Conecta o backend ao banco de dados automaticamente
+      - key: DB_HOST
+        fromDatabase:
+          name: conselhotutelar # Deve ser o mesmo nome do banco definido acima
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: conselhotutelar
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: conselhotutelar
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: conselhotutelar
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: conselhotutelar
+          property: port
+      # Permite que o frontend (definido abaixo) acesse a API
+      - key: CORS_ORIGIN_URL
+        fromService:
+          name: conselhotutelarmoc # Nome do seu serviço de frontend
+          type: static
+          property: url
+
+  # --- Serviço 2: Aplicação React (Frontend) ---
+  - type: static # Corrigido para 'static', que é o ideal para React
+    name: conselhotutelarmoc # Mantido do seu arquivo exportado
+    region: oregon
+    plan: free
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: build  # A pasta que o React gera
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # Conecta o frontend ao backend automaticamente
+      - key: REACT_APP_API_URL
+        fromService:
+          name: conselhotutelar-backend # Nome do seu serviço de backend
+          type: web
+          property: url
