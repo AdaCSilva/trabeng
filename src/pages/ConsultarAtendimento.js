@@ -99,7 +99,7 @@ function ConsultarAtendimento() {
                                 key={atendimento.id_caso}
                                 className={styles.cardLink}
                             >
-                                <div className={styles.cardAtendimento}>
+                                <div className={`${styles.cardAtendimento} content-card`}>
                                     <div className={styles.cardHeader}>
                                         <h3>Nº Procedimento: {atendimento.numero_procedimento}</h3>
                                         <span className={`${styles.status} ${styles[atendimento.status?.replace(/\s+/g, '')]}`}>

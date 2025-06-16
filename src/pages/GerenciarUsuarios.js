@@ -78,7 +78,7 @@ function GerenciarUsuarios() {
                 {error && <p className={styles.error}>Erro: {error}</p>}
 
                 {!loading && !error && (
-                    <div className={styles.tableContainer}>
+                    <div className={`${styles.tableContainer} content-card`}>
                         <table className={styles.usersTable}>
                             <thead>
                                 <tr>
