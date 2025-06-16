@@ -26,9 +26,7 @@ services:
   healthCheckPath: /
   autoDeployTrigger: commit
   rootDir: backend/
-version: "1"
 
-services:
 - type: web
   name: conselhotutelarmoc
   runtime: static
